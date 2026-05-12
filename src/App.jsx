@@ -433,10 +433,10 @@ export default function MapitAgenda(){
     <div style={{background:C.bg,borderBottom:`1.5px solid ${C.border}`,flexShrink:0,boxShadow:"0 2px 8px #0001"}}>
       <div style={{padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
         <div style={{display:"flex",alignItems:"center",gap:10}}>
-          <div style={{display:"flex",alignItems:"center",gap:0}}>
+          <div style={{display:"flex",alignItems:"center",gap:0,direction:"ltr"}}>
             <span style={{fontFamily:"'Nunito','Arial Rounded MT Bold',sans-serif",fontWeight:900,fontSize:28,color:"#2B3990",lineHeight:1,letterSpacing:-1}}>Map</span>
             <span style={{fontFamily:"'Nunito','Arial Rounded MT Bold',sans-serif",fontWeight:900,fontSize:28,color:"#1A7A4A",lineHeight:1,letterSpacing:-1}}>it</span>
-            <svg width="20" height="28" viewBox="0 0 28 40" style={{marginLeft:1,marginBottom:-3}}><path d="M14 1C7.4 1 2 6.4 2 13c0 8.5 12 26 12 26S26 21.5 26 13C26 6.4 20.6 1 14 1z" fill="#F47920"/><circle cx="14" cy="13" r="5" fill="white"/></svg>
+            <svg width="20" height="28" viewBox="0 0 28 40" style={{marginLeft:2,marginBottom:-3}}><path d="M14 1C7.4 1 2 6.4 2 13c0 8.5 12 26 12 26S26 21.5 26 13C26 6.4 20.6 1 14 1z" fill="#F47920"/><circle cx="14" cy="13" r="5" fill="white"/></svg>
           </div>
           <div style={{width:1,height:24,background:C.border}}/>
           <div><div style={{fontSize:12,fontWeight:800,color:C.navy}}>Agenda</div><div style={{fontSize:9,color:C.muted}}>מערכת ניהול ביקורים</div></div>
@@ -497,7 +497,7 @@ export default function MapitAgenda(){
             <div onClick={()=>{setSelectedEmp(emp);setView("employee");}} style={{display:"flex",alignItems:"center",gap:10,flex:1,minWidth:0,cursor:"pointer"}}>
               <Avatar emp={emp} size={38}/>
               <div style={{minWidth:0}}>
-                <div style={{fontSize:14,fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{emp.name}</div>
+                <div style={{fontSize:14,fontWeight:700,wordBreak:"break-word",lineHeight:1.3}}>{emp.name}</div>
                 <div style={{fontSize:11,color:C.muted}}>{Object.values(availability[emp.id]||{}).flat().length} שע' זמינות</div>
               </div>
             </div>
@@ -543,7 +543,7 @@ export default function MapitAgenda(){
           <CalendarGrid weekDates={weekDates} employees={employees} isAvailable={isAvailable} isBooked={isBooked} isVisitStart={isVisitStart} onCellClick={handleAdminCell} weekBase={weekBase} onShiftWeek={dir=>shiftWeek(dir,setWeekBase,weekBase)}/>
         </div>
         {/* RIGHT */}
-        <div style={{width:220,background:C.bg,borderRight:`1.5px solid ${C.border}`,display:"flex",flexDirection:"column",overflow:"hidden",flexShrink:0}}>
+        <div style={{width:240,background:C.bg,borderRight:`1.5px solid ${C.border}`,display:"flex",flexDirection:"column",overflow:"hidden",flexShrink:0}}>
           <EmployeesList/>
         </div>
       </div>
