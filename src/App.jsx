@@ -13,7 +13,7 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 
-import LOGO_SRC from "./logo.png";
+import LOGO_SRC from "./logo.js";
 
 const C = {
   navy:"#2B3990", green:"#1A7A4A", orange:"#F47920",
