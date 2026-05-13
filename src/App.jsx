@@ -15,6 +15,84 @@ const db = getFirestore(fbApp);
 
 
 
+const PIN_CODE = "4321"; // ← mude aqui o código de acesso
+
+function PinScreen({onUnlock}){
+  const [pin,setPin]=useState("");
+  const [err,setErr]=useState(false);
+  const [shake,setShake]=useState(false);
+
+  function handleDigit(d){
+    if(pin.length>=4)return;
+    const next=pin+d;
+    setPin(next);
+    setErr(false);
+    if(next.length===4){
+      if(next===PIN_CODE){
+        setTimeout(()=>onUnlock(),200);
+      } else {
+        setShake(true);
+        setErr(true);
+        setTimeout(()=>{setPin("");setShake(false);},700);
+      }
+    }
+  }
+
+  function handleDel(){setPin(p=>p.slice(0,-1));setErr(false);}
+
+  const digits=["1","2","3","4","5","6","7","8","9","","0","⌫"];
+
+  return(
+    <div dir="rtl" style={{minHeight:"100vh",background:"#F5F6FA",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Heebo',sans-serif",padding:24}}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;800&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0;}
+        @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        .pin-btn:active{transform:scale(.92);opacity:.8}
+      `}</style>
+
+      {/* Logo */}
+      <div style={{marginBottom:32,animation:"fadeIn .4s ease"}}>
+        <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:0,direction:"ltr"}}>
+          <span style={{fontFamily:"'Nunito','Arial Rounded MT Bold',sans-serif",fontWeight:900,fontSize:42,color:"#2B3990",lineHeight:1}}>Map</span>
+          <span style={{fontFamily:"'Nunito','Arial Rounded MT Bold',sans-serif",fontWeight:900,fontSize:42,color:"#1A7A4A",lineHeight:1}}>it</span>
+          <svg width="28" height="40" viewBox="0 0 28 40" style={{marginLeft:2,marginBottom:-4}}><path d="M14 1C7.4 1 2 6.4 2 13c0 8.5 12 26 12 26S26 21.5 26 13C26 6.4 20.6 1 14 1z" fill="#F47920"/><circle cx="14" cy="13" r="5" fill="white"/></svg>
+        </div>
+        <div style={{textAlign:"center",fontSize:13,color:"#7A8499",marginTop:6,fontWeight:600}}>Agenda · מערכת ניהול ביקורים</div>
+      </div>
+
+      {/* PIN dots */}
+      <div style={{animation:shake?"shake .6s ease":"none",marginBottom:28}}>
+        <div style={{display:"flex",gap:16,justifyContent:"center"}}>
+          {[0,1,2,3].map(i=>(
+            <div key={i} style={{width:18,height:18,borderRadius:"50%",
+              background:pin.length>i?(err?"#DC2626":"#2B3990"):"transparent",
+              border:`2px solid ${pin.length>i?(err?"#DC2626":"#2B3990"):"#DDE1EE"}`,
+              transition:"all .15s"}}/>
+          ))}
+        </div>
+        {err&&<div style={{textAlign:"center",color:"#DC2626",fontSize:13,fontWeight:600,marginTop:12}}>קוד שגוי, נסה שוב</div>}
+      </div>
+
+      {/* Keypad */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,72px)",gap:12}}>
+        {digits.map((d,i)=>(
+          d===""?<div key={i}/>:
+          <button key={i} className="pin-btn" onClick={()=>d==="⌫"?handleDel():handleDigit(d)}
+            style={{width:72,height:72,borderRadius:36,border:"none",
+              background:d==="⌫"?"transparent":"#FFFFFF",
+              boxShadow:d==="⌫"?"none":"0 2px 8px #0001",
+              fontSize:d==="⌫"?22:24,fontWeight:700,color:"#1a2340",
+              cursor:"pointer",transition:"all .12s",fontFamily:"'Heebo',sans-serif"}}>
+            {d}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const C = {
   navy:"#2B3990", green:"#1A7A4A", orange:"#F47920",
   bg:"#FFFFFF", bgSoft:"#F5F6FA", border:"#DDE1EE",
@@ -302,7 +380,14 @@ function EmpGrid({emp,empWeekDates,isAvailable,isBooked,isVisitStart,onCellClick
 }
 
 // ══════════════════════════════════════════════════════════════
-export default function MapitAgenda(){
+export default function MapitApp(){
+  const [unlocked,setUnlocked]=useState(()=>sessionStorage.getItem("mapit_auth")==="1");
+  function handleUnlock(){sessionStorage.setItem("mapit_auth","1");setUnlocked(true);}
+  if(!unlocked)return <PinScreen onUnlock={handleUnlock}/>;
+  return <MapitAgenda/>;
+}
+
+function MapitAgenda(){
   const isMobile=useIsMobile();
   const [mobileTab,setMobileTab]=useState("calendar"); // calendar | visits | employees
   const [view,setView]=useState("admin"); // admin | employee
